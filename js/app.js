@@ -269,7 +269,7 @@
       if (o.night) s += '<path class="sy-moon" transform="translate(' + (cx - 8) + ' ' + (B - 20) + ') scale(.68)" d="M15.5 3.2a8.8 8.8 0 1 0 5.3 13.7A7.2 7.2 0 0 1 15.5 3.2z"/>';
       else if (o.pct != null) {
         var top = y(o.pct);
-        if (o.pct > 0) s += '<rect class="sunbar" x="' + (x + 2) + '" y="' + top + '" width="' + Math.max(2, cw - 4) + '" height="' + (B - top) + '" rx="3"/>';
+        if (o.pct > 0) s += '<rect class="sunbar" fill="#f2b21c" x="' + (x + 2) + '" y="' + top + '" width="' + Math.max(2, cw - 4) + '" height="' + (B - top) + '" rx="3"/>';
       }
       s += '</g>';
       if (cw >= 24 || o.h % 2 === 0) s += '<text class="ax" x="' + cx + '" y="' + (B + 16) + '" text-anchor="middle">' + o.h + 'h</text>';
@@ -470,6 +470,8 @@
   $('refresh').onclick =function () { lastError = ''; refresh(true); };
   $('days').onclick = function (e) { var o = e.target.dataset.o; if (o == null) return; picked = true; dayOffset = +o; render(); refresh(false); };
 
+  /* trait sous les jours quand la rangée reste collée en haut */
+  window.addEventListener('scroll', function () { $('days').classList.toggle('stuck', window.scrollY > 40); }, { passive: true });
   window.addEventListener('online', function () { refresh(false); });
   document.addEventListener('visibilitychange', function () { if (!document.hidden) { picked = false; autoDay(); render(); refresh(false).then(function () { if (!picked) { autoDay(); render(); } }); } });
 

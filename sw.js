@@ -1,7 +1,7 @@
 /* Soleil du jour – service worker : garde l'appli disponible hors ligne.
    Changer VERSION à chaque mise en ligne, et le ?v= des fichiers (ici et dans index.html). */
-var VERSION = 'sdj-v8';
-var SHELL = ['./', 'index.html', 'css/app.css?v=8', 'js/config.js?v=8', 'js/model.js?v=8', 'js/app.js?v=8', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png'];
+var VERSION = 'sdj-v10';
+var SHELL = ['./', 'index.html', 'css/app.css?v=10', 'js/config.js?v=10', 'js/model.js?v=10', 'js/app.js?v=10', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png'];
 
 self.addEventListener('install', function (e) {
   e.waitUntil(caches.open(VERSION).then(function (c) { return c.addAll(SHELL); }).then(function () { return self.skipWaiting(); }));
