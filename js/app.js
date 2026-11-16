@@ -470,6 +470,13 @@
   $('refresh').onclick =function () { lastError = ''; refresh(true); };
   $('days').onclick = function (e) { var o = e.target.dataset.o; if (o == null) return; picked = true; dayOffset = +o; render(); refresh(false); };
 
+  /* Sur Android, le lien ouvre l'appli MétéoSuisse si elle est installée, sinon son site. */
+  if (/Android/i.test(navigator.userAgent)) {
+    var ms = $('msLink');
+    ms.href = 'intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=ch.admin.meteoswiss;S.browser_fallback_url=' +
+      encodeURIComponent('https://www.meteosuisse.admin.ch/') + ';end';
+    ms.removeAttribute('target');
+  }
   /* trait sous les jours quand la rangée reste collée en haut */
   window.addEventListener('scroll', function () { $('days').classList.toggle('stuck', window.scrollY > 40); }, { passive: true });
   window.addEventListener('online', function () { refresh(false); });
