@@ -1,9 +1,9 @@
 /* Soleil du jour – réglages par défaut.
    Ce fichier ne contient AUCUNE adresse personnelle : seulement le centre du village.
    Vos vrais réglages (adresse, coordonnées, appareils…) sont enregistrés uniquement sur votre téléphone.
-   Calage du 16/11/2026 sur 106 jours de relevés Atmozen, du 1/08 au 14/11/2026 (voir CALAGE.md). */
+   Calage du 19/11/2026 sur 108 jours de relevés Atmozen, du 1/08 au 18/11/2026 (voir CALAGE.md). */
 var SDJ_DEFAULTS = {
-  version: 3,
+  version: 4,
   site: {
     label: 'Champanges (centre du village)',
     lat: 46.37, lon: 6.55,
@@ -14,17 +14,17 @@ var SDJ_DEFAULTS = {
     kwE: 4.5, kwW: 4.5, tilt: 31,
     azE: -90, azW: 90,          /* -90 = plein est, 90 = plein ouest, 0 = sud */
     cap: 8,                     /* limite des onduleurs (kW) */
-    pr: 0.92,                   /* coefficient de calage (57 jours ensoleillés, août-novembre 2026) */
+    pr: 0.92,                   /* coefficient de calage (jours ensoleillés d'août à novembre 2026) */
     albedo: 0.2, gamma: -0.0035, kTemp: 0.035,
-    /* calés sur les jours ensoleillés d'août à novembre, la courbe du 14/11 (pic vers 14h) et le 8/08 (faible jusqu'à 10h) */
+    iam: 0, g0: 0,              /* reflet du verre et perte par faible lumière : testés sur vos relevés, sans gain, donc désactivés */
+    /* calés sur les jours ensoleillés d'août à novembre et la courbe du 18/11 (soleil dès 9h30, coupé vers 15h10) */
     obstacles: [
       { n: 'Bâtiment au sud-est (partie haute)', az1: -130, az2: -60, h: 40 },
-      { n: 'Bâtiment au sud-est (partie basse)', az1: -60, az2: -25, h: 20 },
-      { n: 'Masque au sud (soleil d’hiver)', az1: -25, az2: 15, h: 30 },
-      { n: 'Masque bas à l’ouest-sud-ouest', az1: 40, az2: 80, h: 11 }
+      { n: 'Bâtiment au sud-est (partie basse)', az1: -60, az2: -25, h: 15 },
+      { n: 'Masque à l’ouest-sud-ouest', az1: 40, az2: 80, h: 14 }
     ],
     /* heures sans soleil : brouillard / stratus (nuages bas ≥ 90 %, pas de pluie) et autres temps couverts */
-    grey: { stratus: 0.2, overcast: 0.8 }
+    grey: { stratus: 0.2, overcast: 0.75 }
   },
   base: 0.3,                    /* consommation de fond de la maison (kW) */
   leave: '05:45',

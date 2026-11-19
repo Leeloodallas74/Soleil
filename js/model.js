@@ -33,12 +33,14 @@ var SDJ = (function () {
   }
 
   /* Irradiance reçue par un pan (W/m²), modèle de Hay-Davies (le diffus proche du soleil est masqué comme le direct). */
-  function planeIrr(s, dni, dhi, ghi, tilt, paz, visible, albedo) {
+  function planeIrr(s, dni, dhi, ghi, tilt, paz, visible, albedo, iam) {
     var b = tilt * R, sz = Math.sqrt(Math.max(0, 1 - s.cz * s.cz));
     var ct = Math.max(0, s.cz * Math.cos(b) + sz * Math.sin(b) * Math.cos((s.az - paz) * R));
     var ai = Math.min(1, dni / s.i0), rb = ct / Math.max(s.cz, 0.087);
     var v = visible ? 1 : 0;
-    return dni * ct * v + dhi * ((1 - ai) * (1 + Math.cos(b)) / 2 + ai * rb * v) + ghi * albedo * (1 - Math.cos(b)) / 2;
+    /* reflet sur le verre quand le soleil arrive de biais (modèle ASHRAE, coefficient iam) */
+    var kIam = iam && ct > 0 ? Math.max(0, 1 - iam * (1 / Math.max(ct, 0.05) - 1)) : 1;
+    return dni * ct * v * kIam + dhi * ((1 - ai) * (1 + Math.cos(b)) / 2 + ai * rb * v) + ghi * albedo * (1 - Math.cos(b)) / 2;
   }
 
   /* Production (kW moyens) de chaque pas de temps.
@@ -51,11 +53,13 @@ var SDJ = (function () {
       var s = sun(wx.t[i] - wx.step / 2, p.lat, p.lon);
       if (s.elev < 0.5 || (dni + dhi + ghi) <= 0) { E.push(0); W.push(0); continue; }
       var vis = s.elev > horizonAt(s.az, p);
-      var gE = planeIrr(s, dni, dhi, ghi, p.tilt, p.azE, vis, p.albedo);
-      var gW = planeIrr(s, dni, dhi, ghi, p.tilt, p.azW, vis, p.albedo);
+      var gE = planeIrr(s, dni, dhi, ghi, p.tilt, p.azE, vis, p.albedo, p.iam);
+      var gW = planeIrr(s, dni, dhi, ghi, p.tilt, p.azW, vis, p.albedo, p.iam);
       var ta = wx.temp && wx.temp[i] != null ? +wx.temp[i] : 15;
       var fE = 1 + p.gamma * (ta + p.kTemp * gE - 25), fW = 1 + p.gamma * (ta + p.kTemp * gW - 25);
-      var e = p.kwE * gE / 1000 * p.pr * fE, w = p.kwW * gW / 1000 * p.pr * fW;
+      /* rendement plus faible par faible lumière (g0 en W/m², 0 = sans effet) */
+      var g0 = p.g0 || 0, lE = g0 ? gE / (gE + g0) * (1000 + g0) / 1000 : 1, lW = g0 ? gW / (gW + g0) * (1000 + g0) / 1000 : 1;
+      var e = p.kwE * gE / 1000 * p.pr * fE * lE, w = p.kwW * gW / 1000 * p.pr * fW * lW;
       var sum = e + w;
       if (sum > p.cap) { e *= p.cap / sum; w *= p.cap / sum; }
       E.push(e); W.push(w);
